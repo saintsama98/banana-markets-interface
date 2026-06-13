@@ -1,0 +1,391 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Rich-yellow manga theme + Apple-style Liquid Glass layering:
+     CONTENT is solid cream (always readable); the FUNCTIONAL layer —
+     navbars, buttons, tabs, chips, footers — is regular-variant liquid
+     glass floating above it. */
+  :root {
+    color-scheme: light;
+    --canvas: 255 204 41; /* #FFCC29 rich yellow */
+    --surface-1: 255 247 224; /* #FFF7E0 cream paper */
+    --surface-2: 255 238 188; /* #FFEEBC */
+    --surface-3: 255 226 140; /* #FFE28C */
+    --line: 20 20 18; /* #141412 ink — every boundary is bold black */
+    --fg: 20 20 18;
+    --fg-muted: 74 70 50; /* #4A4632 */
+    --fg-faint: 110 104 74; /* #6E684A */
+    /* regular-variant glass tuning (controls layer only) — 95% transparent */
+    --lg-fill: rgba(255, 247, 224, 0.05);
+    --lg-blur: 14px;
+    /* specular ring + top highlight = the lensing edge */
+    --lg-edge: inset 0 0 0 1px rgba(255, 255, 255, 0.35), inset 0 1.5px 0 rgba(255, 255, 255, 0.7),
+      inset 0 -1px 0 rgba(20, 20, 18, 0.08);
+  }
+
+  html,
+  body {
+    @apply bg-canvas text-fg;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    /* Establish a stacking context so the negative-z backdrop layers (the
+       machinery gears + the liquid-glass ambient field) paint ABOVE the body's
+       own opaque canvas background instead of being buried behind it. Without
+       this, body's bg-canvas paints over every z-index:-N fixed layer. */
+    isolation: isolate;
+  }
+
+  /* Headings and controls speak the display grotesk. */
+  h1,
+  h2,
+  h3,
+  h4,
+  button {
+    @apply font-display;
+  }
+
+  /* Every numeral in the product is tabular mono. */
+  .num {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .num-mono {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+
+  ::selection {
+    background: rgba(124, 168, 60, 0.45);
+  }
+}
+
+@layer components {
+  /* ---- Ambient field behind the page (rendered by LiquidGlassLayer) ----
+     Gives the floating glass layer real color to refract. */
+  .liquid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+    background: rgb(var(--canvas));
+  }
+  .liquid-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    will-change: transform;
+  }
+  .liquid-blob-1 {
+    left: -10%;
+    top: -12%;
+    height: 55vmax;
+    width: 55vmax;
+    background: radial-gradient(circle, rgba(255, 251, 235, 0.95), transparent 65%);
+    animation: blob-drift-1 48s ease-in-out infinite;
+  }
+  .liquid-blob-2 {
+    right: -14%;
+    top: 4%;
+    height: 48vmax;
+    width: 48vmax;
+    background: radial-gradient(circle, rgba(124, 168, 60, 0.4), transparent 65%);
+    animation: blob-drift-2 56s ease-in-out infinite;
+  }
+  .liquid-blob-3 {
+    bottom: -18%;
+    left: 16%;
+    height: 50vmax;
+    width: 50vmax;
+    background: radial-gradient(circle, rgba(255, 176, 0, 0.45), transparent 68%);
+    animation: blob-drift-3 64s ease-in-out infinite;
+  }
+  .liquid-blob-4 {
+    bottom: 6%;
+    right: 8%;
+    height: 36vmax;
+    width: 36vmax;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7), transparent 66%);
+    animation: blob-drift-2 72s ease-in-out infinite reverse;
+  }
+  @keyframes blob-drift-1 {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(8%, 10%) scale(1.12);
+    }
+  }
+  @keyframes blob-drift-2 {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1.05);
+    }
+    50% {
+      transform: translate(-10%, -8%) scale(0.92);
+    }
+  }
+  @keyframes blob-drift-3 {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(0.95);
+    }
+    50% {
+      transform: translate(6%, -12%) scale(1.15);
+    }
+  }
+
+  /* ============ CONTENT LAYER — solid, opaque, always readable ============ */
+  .panel {
+    @apply rounded-card border-2 border-ink bg-surface-1;
+    box-shadow: 5px 5px 0 0 #141412;
+  }
+  .panel-2 {
+    @apply rounded-card border-2 border-ink bg-surface-2;
+    box-shadow: 3px 3px 0 0 #141412;
+  }
+  /* Focal content widget — the one oversized panel per page. */
+  .glass {
+    @apply rounded-panel border-2 border-ink bg-surface-1;
+    box-shadow: 8px 8px 0 0 #141412;
+  }
+
+  /* ============ FUNCTIONAL LAYER — regular-variant liquid glass =========== */
+
+  /* Navigation bar: floats above content. Scroll-edge effect — the glass
+     intensifies as content scrolls beneath it (html[data-scrolled] is set by
+     LiquidGlassLayer). Chromium additionally gets true lens refraction. */
+  /* Translucent YELLOW nav — liquid/frosted at very minimal opacity (the
+     backdrop blur does the work), with NO white specular sheen, edge or droplet.
+     Ink border; a hard ink shadow once content scrolls beneath it. */
+  .glass-nav {
+    position: relative;
+    border-bottom: 2px solid #141412;
+    background: rgba(255, 204, 41, 0.1);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(150%);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  html[data-scrolled="true"] .glass-nav {
+    background: rgba(255, 204, 41, 0.18);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    backdrop-filter: blur(18px) saturate(170%);
+    box-shadow: 0 4px 0 0 rgba(20, 20, 18, 0.85);
+  }
+
+  /* Footers / trust strips: same translucent-yellow frosting, no white. */
+  .glass-soft {
+    background: rgba(255, 204, 41, 0.1);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(150%);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-nav,
+    .glass-soft {
+      background: rgb(var(--surface-1));
+    }
+  }
+
+  /* Controls just need a positioning context (for the active-tab indicator). */
+  .btn,
+  .pill-tabs {
+    position: relative;
+  }
+
+  /* ---- Typographic helpers -------------------------------------------- */
+  .overline {
+    @apply font-display text-2xs font-bold uppercase tracking-[0.14em] text-fg-faint;
+  }
+  .display {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  /* ---- Buttons — glass controls: lensing edge + gel press ---------------- */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border-2 border-ink px-5 py-2.5 font-display text-sm font-bold
+           transition-[transform,box-shadow,background-color,color] duration-150 ease-out
+           disabled:cursor-not-allowed disabled:opacity-40;
+    box-shadow: 3px 3px 0 0 #141412;
+  }
+  .btn:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 #141412;
+  }
+  /* press: the control compresses under the finger */
+  .btn:active:not(:disabled) {
+    transform: translate(1px, 1px) scale(0.97);
+    box-shadow: 1px 1px 0 0 #141412;
+  }
+
+  /* Hover = the control's color turns SOLID, rich, pure and high-contrast. */
+  .btn-primary {
+    @apply btn text-surface-1;
+    background: #5c8a2c;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #3f6519; /* deeper, purer matcha */
+  }
+  .btn-punch {
+    @apply btn text-punch-on;
+    background: #ffb000;
+  }
+  .btn-punch:hover:not(:disabled) {
+    background: #ff9d00; /* richer gold */
+  }
+  .btn-ghost {
+    @apply btn text-fg;
+    background: transparent;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: #141412; /* invert to pure ink — highest contrast */
+    @apply text-surface-1;
+  }
+  .btn-danger {
+    @apply btn text-down;
+    background: transparent;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: #c6303e; /* solid, pure red */
+    @apply text-surface-1;
+  }
+
+  /* ---- Pill tabs — glass strip; active pill is solid matcha (morphs via
+     framer-motion layoutId in the component) ------------------------------ */
+  .pill-tabs {
+    @apply inline-flex items-center gap-1 rounded-full border-2 border-ink p-1;
+    background: rgb(var(--surface-1));
+    box-shadow: 3px 3px 0 0 #141412;
+  }
+  .pill-tab {
+    @apply relative rounded-full px-4 py-1.5 font-display text-sm font-bold text-fg-muted transition-colors duration-150;
+  }
+  .pill-tab:hover {
+    @apply bg-surface-3 text-fg; /* rich fill + pure ink on hover */
+  }
+  .pill-tab[data-active="true"] {
+    @apply bg-accent text-accent-on;
+  }
+
+  /* ---- Dense data tables (content — solid) ------------------------------ */
+  .dtable {
+    @apply w-full text-sm;
+  }
+  .dtable thead th {
+    @apply border-b-2 border-ink px-3 py-2.5 text-left font-display text-2xs font-bold uppercase tracking-[0.1em] text-fg-muted;
+  }
+  .dtable tbody td {
+    @apply border-b border-ink/15 px-3 py-2.5 align-middle;
+  }
+  .dtable tbody tr:last-child td {
+    @apply border-b-0;
+  }
+  .dtable tbody tr {
+    @apply transition-colors duration-150;
+  }
+  .dtable tbody tr:hover {
+    background: rgb(var(--surface-2) / 0.8);
+  }
+  .dtable .cell-num {
+    @apply num text-right;
+  }
+
+  /* ---- Tags / status chips — small floating badges: light frost ---------- */
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-display text-2xs font-bold uppercase tracking-wide;
+    border-color: #141412 !important; /* every boundary is ink, no exceptions */
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+@layer utilities {
+  .ring-focus {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
+
+  /* Marketing band alternation: transparent (ambient shows) ↔ solid cream */
+  .band {
+    background: transparent;
+  }
+  .band-raised {
+    @apply bg-surface-1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #141412;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5c8a2c;
+  background-clip: content-box;
+}
+
+/* Perpetual machinery backdrop rotation. Defined here (not via Tailwind config)
+   so the MachineryBackground gears animate via inline `animation` regardless of
+   whether the running dev server regenerated Tailwind utilities. The global
+   prefers-reduced-motion guard above neutralizes it for users who opt out. */
+@keyframes spin360 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Gentle vertical drift for the faceted backdrop crystals. Uses the `translate`
+   property (not `transform`) so it composes with the spin360 rotate transform. */
+@keyframes bg-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -1.6rem;
+  }
+}
+
+/* Legibility scrim — wrap any text that floats over the 3D crystal backdrop so
+   the crystals are blurred + softly tinted directly behind the text (and only
+   there), keeping it readable. Hugs its content; pair with the `-ml`/`-mt`
+   offset utilities at the call site to preserve the original text alignment. */
+.legible {
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  height: -moz-fit-content;
+  height: fit-content;
+  align-self: start; /* never stretch to a grid/flex row's full height */
+  border-radius: 14px;
+  padding: 0.5rem 1.1rem;
+  background: rgba(255, 204, 41, 0.24);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}

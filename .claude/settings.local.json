@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(break)",
+      "Bash(curl *)",
+      "Bash(npm install *)",
+      "Bash(node -e \"console.log\\('gsap', require\\('/mnt/adiii_dev/Ethereum-dev/vault-router-ui/node_modules/gsap/package.json'\\).version\\); console.log\\('lenis', require\\('/mnt/adiii_dev/Ethereum-dev/vault-router-ui/node_modules/lenis/package.json'\\).version\\)\")",
+      "Bash(npm run *)",
+      "Bash(echo \"---typecheck exit: $?\")",
+      "Read(//tmp/**)",
+      "Bash(sed -i 's/color: \"#2dd4bf\"/color: \"#0F766E\"/; s/color: \"#6366f1\"/color: \"#4338CA\"/; s/color: \"#d946ef\"/color: \"#A21CAF\"/; s/color: \"#94a3b8\"/color: \"#57534E\"/g' src/lib/strategies.ts)",
+      "Bash(sed -i 's/{ label: \"Aave V3\", color: \"#2dd4bf\" }/{ label: \"Aave V3\", color: \"#0F766E\" }/; s/{ label: \"Morpho\", color: \"#6366f1\" }/{ label: \"Morpho\", color: \"#4338CA\" }/; s/{ label: \"Pendle\", color: \"#d946ef\" }/{ label: \"Pendle\", color: \"#A21CAF\" }/' src/components/shell/TrustStrip.tsx)",
+      "Bash(sed -i 's/color = \"#00A1FF\"/color = \"#5C8A2C\"/g' src/components/ui/charts.tsx)",
+      "WebSearch"
+    ]
+  }
+}
