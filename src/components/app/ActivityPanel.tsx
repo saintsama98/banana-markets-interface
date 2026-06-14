@@ -65,36 +65,63 @@ export function ActivityPanel({ limit }: { limit?: number }) {
   );
 }
 
-function describe(it: ActivityItem, assetDecimals: number, shareDecimals: number): string {
+/**
+ * The Amount column mixes numeric values (which must align in a clean decimal
+ * column) with prose ("targets updated", strategy labels). `num` rows keep the
+ * figure as its own right-aligned tabular span and push any qualifier (TVL,
+ * "shares") out to a muted label, so every $ value lines up regardless of
+ * prefix; `text` rows are plain muted prose.
+ */
+type Amount =
+  | { kind: "num"; value: string; prefix?: string; suffix?: string }
+  | { kind: "text"; text: string };
+
+function describe(it: ActivityItem, assetDecimals: number, shareDecimals: number): Amount {
   switch (it.kind) {
     case "deposit":
     case "withdraw":
     case "fulfill":
-      return formatUsd(it.assets, assetDecimals);
+      return { kind: "num", value: formatUsd(it.assets, assetDecimals) };
     case "request":
     case "cancel":
-      return it.shares !== undefined ? `${formatAmount(it.shares, shareDecimals, { maxFractionDigits: 2 })} shares` : "";
+      return it.shares !== undefined
+        ? { kind: "num", value: formatAmount(it.shares, shareDecimals, { maxFractionDigits: 2 }), suffix: "shares" }
+        : { kind: "text", text: "" };
     case "rebalance":
-      return it.assets !== undefined ? `TVL ${formatUsd(it.assets, assetDecimals)}` : "";
+      return it.assets !== undefined
+        ? { kind: "num", value: formatUsd(it.assets, assetDecimals), prefix: "TVL" }
+        : { kind: "text", text: "" };
     case "allocation":
-      return "targets updated";
+      return { kind: "text", text: "targets updated" };
     case "quarantine":
     case "harvest":
-      return it.strategyId ? resolveStrategy(it.strategyId).label : "";
+      return { kind: "text", text: it.strategyId ? resolveStrategy(it.strategyId).label : "" };
     default:
-      return "";
+      return { kind: "text", text: "" };
   }
 }
 
 function Row({ item, assetDecimals, shareDecimals }: { item: ActivityItem; assetDecimals: number; shareDecimals: number }) {
   const m = META[item.kind];
-  const detail = describe(item, assetDecimals, shareDecimals);
+  const amount = describe(item, assetDecimals, shareDecimals);
   return (
     <tr>
       <td className="pl-5">
         <span className={cx("tag", m.chip)}>{m.label}</span>
       </td>
-      <td className="cell-num text-fg">{detail || "—"}</td>
+      <td className="cell-num text-fg">
+        {amount.kind === "text" ? (
+          <span className="text-xs text-fg-faint">{amount.text || "—"}</span>
+        ) : (
+          <span className="inline-flex items-baseline justify-end gap-1.5">
+            {amount.prefix ? (
+              <span className="font-display text-2xs font-bold uppercase tracking-wide text-fg-faint">{amount.prefix}</span>
+            ) : null}
+            <span className="num tabular-nums">{amount.value}</span>
+            {amount.suffix ? <span className="text-2xs text-fg-faint">{amount.suffix}</span> : null}
+          </span>
+        )}
+      </td>
       <td className="num-mono text-xs text-fg-faint">{item.actor ? shortAddress(item.actor) : "—"}</td>
       <td className="cell-num text-2xs text-fg-faint">
         {item.timestamp ? relativeAgo(item.timestamp) : `#${item.blockNumber.toString()}`}

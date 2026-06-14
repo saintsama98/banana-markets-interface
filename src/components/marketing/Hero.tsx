@@ -64,7 +64,7 @@ export function Hero() {
         </h1>
 
         <p className="hero-sub mt-7 max-w-2xl text-pretty text-base leading-relaxed text-fg-muted sm:text-lg">
-          Banana Markets allocates deposits across Aave, Morpho and Pendle under an on-chain risk model — per-strategy
+          Banana Markets allocates deposits across Aave, Morpho, Pendle and Compound under an on-chain risk model — per-strategy
           caps, an idle reserve for instant exits, share-price circuit breakers, and a curator-operated keeper.
           Transparent by construction.
         </p>

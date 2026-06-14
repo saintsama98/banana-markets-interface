@@ -15,6 +15,7 @@ const VENUES = [
   { name: "Aave V3", color: "#0F766E" },
   { name: "Morpho", color: "#4338CA" },
   { name: "Pendle PT", color: "#A21CAF" },
+  { name: "Compound V3", color: "#00D395" },
 ];
 
 /**
@@ -90,7 +91,7 @@ export function Architecture() {
               <div className="arch-flow-2 h-8 w-0.5 origin-top bg-accent-strong" />
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {VENUES.map((v) => (
                 <div key={v.name} className="arch-venue panel-2 px-4 py-3 text-center">
                   <span className="font-display text-sm font-bold" style={{ color: v.color }}>

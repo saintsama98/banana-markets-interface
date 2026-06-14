@@ -8,6 +8,7 @@ const GROUPS: { title: string; items: { name: string; note: string }[] }[] = [
       { name: "Aave V3", note: "Variable lending" },
       { name: "Morpho", note: "Curated markets" },
       { name: "Pendle", note: "Fixed yield (PT)" },
+      { name: "Compound V3", note: "Variable lending" },
     ],
   },
   {

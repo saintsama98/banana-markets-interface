@@ -25,7 +25,11 @@ export function AllocationBar({ rows, mode = "live" }: { rows: StrategyRow[]; mo
         {segments.length === 0 && <div className="h-full w-full bg-surface-3" />}
       </div>
 
-      <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 sm:grid-cols-4">
+      {/* Always 2 columns: this legend renders inside narrow side panels where
+          a 4-across row truncates labels and overflows the values once there are
+          4+ strategies. A 2-wide grid (2x2 for four venues) keeps each cell
+          readable in both the narrow dashboard column and the wide transparency view. */}
+      <ul className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3">
         {rows.map((r) => (
           <li key={r.id} className="flex items-start gap-2">
             <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: r.meta.color }} />

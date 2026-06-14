@@ -1,6 +1,6 @@
 import { hexToString, type Hex } from "viem";
 
-export type StrategyKey = "aave" | "morpho" | "pendle" | "idle" | "unknown";
+export type StrategyKey = "aave" | "morpho" | "pendle" | "compound" | "idle" | "unknown";
 
 export interface StrategyMeta {
   key: StrategyKey;
@@ -107,6 +107,31 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
       { label: "PT oracle", value: "set on deploy" },
     ],
     match: "pendle",
+  },
+  {
+    slug: "compound-usdc",
+    key: "compound",
+    venue: "Compound V3",
+    kind: "Variable lending",
+    glyph: "◈",
+    colorVar: "venue-compound",
+    color: "#00D395",
+    label: "Compound V3",
+    apyLabel: "Supply APY",
+    blurb:
+      "USDC supplied to the Compound V3 (Comet) base market on Arbitrum. The supply rate floats with market utilization and accrues continuously per block. A liquid, single-asset lending venue that diversifies the variable-rate core.",
+    riskParams: [
+      { label: "Mechanism", value: "Variable supply rate" },
+      { label: "Liquidity", value: "Instant (utilization-bound)", hint: "Withdrawable while the Comet base market has free liquidity" },
+      { label: "Rate driver", value: "Market utilization" },
+      { label: "Reserves", value: "set by Compound governance" },
+    ],
+    contracts: [
+      { label: "Comet market", value: "set on deploy" },
+      { label: "cUSDCv3 token", value: "set on deploy" },
+      { label: "Price feed", value: "Compound / Chainlink" },
+    ],
+    match: "compound",
   },
 ];
 

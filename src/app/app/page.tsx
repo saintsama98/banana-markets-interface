@@ -3,16 +3,14 @@ import { DepositCard } from "@/components/app/DepositCard";
 import { PositionPanel } from "@/components/app/PositionPanel";
 import { WithdrawQueuePanel } from "@/components/app/WithdrawQueuePanel";
 import { ActivityPanel } from "@/components/app/ActivityPanel";
+import { PageHeader } from "@/components/ui/primitives";
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-xl font-bold tracking-tight text-fg">Dashboard</h1>
-        <p className="mt-1 text-sm text-fg-muted">
-          Deposit USDC and earn risk-gated yield routed across Aave, Morpho and Pendle.
-        </p>
-      </div>
+      <PageHeader title="Dashboard">
+        Deposit USDC and earn risk-gated yield routed across Aave, Morpho, Pendle and Compound.
+      </PageHeader>
 
       {/* Top strip: mono-numeral vault stats */}
       <VaultStats />

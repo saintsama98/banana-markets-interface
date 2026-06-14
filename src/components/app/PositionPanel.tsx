@@ -33,18 +33,22 @@ export function PositionPanel() {
 
   const locked = pos.lockedUntil !== undefined && Number(pos.lockedUntil) * 1000 > Date.now();
 
-  // Synchronous withdraw() is backed only by the vault's idle USDC, so what's
-  // truly instantly withdrawable is min(user redeemable, vault idle).
+  // Instant withdraw is capped at 25% of the user's position per transaction
+  // (matches DepositCard's INSTANT_WITHDRAW_PCT) and is also backed only by the
+  // vault's idle USDC — so what's truly instantly withdrawable is
+  // min(25%-of-position, vault idle).
+  const INSTANT_WITHDRAW_PCT = 25n;
+  const perTxCap: bigint | undefined =
+    pos.maxWithdrawAssets !== undefined ? (pos.maxWithdrawAssets * INSTANT_WITHDRAW_PCT) / 100n : undefined;
   const instantlyWithdrawable: bigint | undefined =
-    pos.maxWithdrawAssets !== undefined && vault.idleAssets !== undefined
-      ? pos.maxWithdrawAssets < vault.idleAssets
-        ? pos.maxWithdrawAssets
+    perTxCap !== undefined && vault.idleAssets !== undefined
+      ? perTxCap < vault.idleAssets
+        ? perTxCap
         : vault.idleAssets
-      : pos.maxWithdrawAssets ?? vault.idleAssets;
+      : perTxCap ?? vault.idleAssets;
+  // True when idle liquidity (not the 25% cap) is the binding constraint.
   const idleCapped =
-    pos.maxWithdrawAssets !== undefined &&
-    vault.idleAssets !== undefined &&
-    pos.maxWithdrawAssets > vault.idleAssets;
+    perTxCap !== undefined && vault.idleAssets !== undefined && perTxCap > vault.idleAssets;
 
   return (
     <Panel>
@@ -64,7 +68,7 @@ export function PositionPanel() {
             <Stat
               label="Instantly withdrawable"
               value={formatUsd(instantlyWithdrawable, vault.assetDecimals)}
-              sub={idleCapped ? "capped by idle — Request exit for more" : "limited by idle liquidity"}
+              sub={idleCapped ? "capped by idle — Request exit for more" : "max 25% of position / tx"}
             />
             <Stat
               label="Share lock"

@@ -4,7 +4,7 @@ import { useVault } from "@/hooks/useVault";
 import { useAllocations } from "@/hooks/useAllocations";
 import { STRATEGY_CONFIGS } from "@/lib/strategies";
 import { VAULT_ADDRESS, IS_VAULT_CONFIGURED, EXPLORER_URL, HAS_EXPLORER } from "@/lib/contracts";
-import { Panel, PanelHeader, Stat, Skeleton, Tag } from "@/components/ui/primitives";
+import { Panel, PanelHeader, PageHeader, Stat, Skeleton, Tag } from "@/components/ui/primitives";
 import { AllocationBar } from "@/components/ui/AllocationBar";
 import { formatUsd, formatUsdCompact, bpsToPct } from "@/lib/format";
 
@@ -28,13 +28,10 @@ export function TransparencyView() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-fg">Transparency</h1>
-        <p className="mt-1 max-w-2xl text-sm text-fg-muted">
-          Real-time backing and allocation. Every figure here is read directly from the vault contract — no off-chain
-          accounting, nothing to take on trust.
-        </p>
-      </div>
+      <PageHeader title="Transparency">
+        Real-time backing and allocation. Every figure here is read directly from the vault contract — no off-chain
+        accounting, nothing to take on trust.
+      </PageHeader>
 
       {/* Backing metrics */}
       <Panel>

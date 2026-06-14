@@ -46,6 +46,7 @@ const config: Config = {
           aave: "#0F766E",
           morpho: "#4338CA",
           pendle: "#A21CAF",
+          compound: "#00D395",
           idle: "#57534E",
         },
       },
