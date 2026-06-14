@@ -16,7 +16,13 @@ export interface StrategyRow {
   assets?: bigint;
   capBps?: number;
   quarantined?: boolean;
-  /** share of live capital, 0..1, computed against summed assets */
+  /**
+   * Share of total vault assets (TVL), 0..1. Uses the SAME denominator as
+   * targetBps (which is a fraction of TVL), so live and target are directly
+   * comparable — a strategy on its target reads as ~0 drift. (Dividing by the
+   * summed *deployed* assets instead would inflate every venue and show
+   * permanent fake drift, since only part of TVL is ever deployed.)
+   */
   liveFraction: number;
 }
 
@@ -32,6 +38,14 @@ export function useAllocations() {
   });
 
   const ids = (idsQuery.data as Hex[] | undefined) ?? [];
+
+  // TVL — the denominator for liveFraction, matching how targetBps is defined.
+  const totalAssetsQuery = useReadContract({
+    ...base,
+    functionName: "totalAssets",
+    query: { enabled: IS_VAULT_CONFIGURED, refetchInterval: 15_000 },
+  });
+  const totalAssets = totalAssetsQuery.data as bigint | undefined;
 
   const detailQuery = useReadContracts({
     allowFailure: true,
@@ -62,14 +76,15 @@ export function useAllocations() {
       } satisfies StrategyRow;
     });
 
-    const total = raw.reduce((sum, r) => sum + (r.assets ?? 0n), 0n);
-    if (total > 0n) {
+    // Denominator is TVL (totalAssets), not the summed deployed assets, so a
+    // strategy holding exactly its targetBps share of TVL reads as ~0 drift.
+    if (totalAssets && totalAssets > 0n) {
       for (const r of raw) {
-        r.liveFraction = Number(((r.assets ?? 0n) * 10_000n) / total) / 10_000;
+        r.liveFraction = Number(((r.assets ?? 0n) * 10_000n) / totalAssets) / 10_000;
       }
     }
     return raw;
-  }, [ids, detailQuery.data]);
+  }, [ids, detailQuery.data, totalAssets]);
 
   return {
     isConfigured: IS_VAULT_CONFIGURED,

@@ -6,7 +6,7 @@ import { useAllocations } from "@/hooks/useAllocations";
 import { useRole } from "@/hooks/useRole";
 import { type StrategyConfig } from "@/lib/strategies";
 import { Panel, PanelHeader, Stat, Skeleton, Tag } from "@/components/ui/primitives";
-import { AreaChart } from "@/components/ui/charts";
+import { PerformancePanel } from "./PerformancePanel";
 import { DepositCard } from "./DepositCard";
 import { ActivityPanel } from "./ActivityPanel";
 import { formatUsd, bpsToPct, shortAddress } from "@/lib/format";
@@ -28,7 +28,7 @@ export function StrategyDetail({ config }: { config: StrategyConfig }) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-fg-muted">
+      <div className="glass-soft inline-flex items-center gap-2 rounded-card border-2 border-ink px-3 py-1.5 text-xs text-fg-muted">
         <Link href="/app/strategies" className="hover:text-accent">
           Strategies
         </Link>
@@ -75,7 +75,9 @@ export function StrategyDetail({ config }: { config: StrategyConfig }) {
         </div>
       </Panel>
 
-      <p className="max-w-3xl text-sm leading-relaxed text-fg-muted">{config.blurb}</p>
+      <div className="glass-soft inline-block max-w-3xl rounded-card border-2 border-ink px-5 py-4 shadow-[3px_3px_0_0_#141412]">
+        <p className="text-sm leading-relaxed text-fg">{config.blurb}</p>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
@@ -122,13 +124,8 @@ export function StrategyDetail({ config }: { config: StrategyConfig }) {
             </div>
           </Panel>
 
-          {/* APY / TVL history */}
-          <Panel>
-            <PanelHeader title="Performance" hint="APY / TVL history" />
-            <div className="px-5 py-5">
-              <AreaChart data={[]} color={config.color} emptyHint="Historical APY/TVL needs an indexer or subgraph." />
-            </div>
-          </Panel>
+          {/* TVL · share price · APY history (indexed from on-chain events) */}
+          <PerformancePanel color={config.color} />
 
           {/* Risk params + contracts */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -169,10 +166,12 @@ export function StrategyDetail({ config }: { config: StrategyConfig }) {
         {/* Deposit widget */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <DepositCard />
-          <p className="mt-3 px-1 text-2xs leading-relaxed text-fg-faint">
-            Deposits buy a share of the whole vault, not this strategy alone. The keeper routes capital toward targets;
-            you hold blended, risk-gated exposure.
-          </p>
+          <div className="glass-soft mt-3 rounded-card border-2 border-ink px-3 py-2.5 shadow-[3px_3px_0_0_#141412]">
+            <p className="text-2xs leading-relaxed text-fg-muted">
+              Deposits buy a share of the whole vault, not this strategy alone. The keeper routes capital toward
+              targets; you hold blended, risk-gated exposure.
+            </p>
+          </div>
         </div>
       </div>
     </div>

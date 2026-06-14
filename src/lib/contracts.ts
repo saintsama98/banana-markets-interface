@@ -27,6 +27,14 @@ export const VAULT_ADDRESS: Address | undefined =
 
 export const IS_VAULT_CONFIGURED = VAULT_ADDRESS !== undefined;
 
+/**
+ * 8-digit transaction PIN gating every value-moving action (deposit / withdraw /
+ * request exit) before the wallet prompt opens. Configurable via env; defaults
+ * to a known demo code. This is a UI confirmation gate, not on-chain security —
+ * the wallet signature remains the real authorization.
+ */
+export const TX_PASSCODE = (process.env.NEXT_PUBLIC_TX_PASSCODE ?? "12345678").trim();
+
 /** Block explorer base for the active chain (tx links in the activity feed). */
 const explorerUrl = ACTIVE_CHAIN.blockExplorers?.default.url;
 

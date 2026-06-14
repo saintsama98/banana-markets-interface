@@ -13,6 +13,7 @@ const ROUTES = [
   { label: "Aave V3", color: "#0F766E" },
   { label: "Morpho", color: "#4338CA" },
   { label: "Pendle", color: "#A21CAF" },
+  { label: "Compound V3", color: "#00D395" },
 ];
 
 const LINKS = [

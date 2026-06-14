@@ -15,7 +15,7 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", displ
 export const metadata: Metadata = {
   title: "Banana Markets — institutional USDC yield on Arbitrum",
   description:
-    "An ERC-4626 router vault on an EIP-2535 Diamond. Deposit USDC; earn risk-gated yield routed across Aave, Morpho and Pendle, with on-chain transparency and a curator-operated risk model.",
+    "An ERC-4626 router vault on an EIP-2535 Diamond. Deposit USDC; earn risk-gated yield routed across Aave, Morpho, Pendle and Compound, with on-chain transparency and a curator-operated risk model.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

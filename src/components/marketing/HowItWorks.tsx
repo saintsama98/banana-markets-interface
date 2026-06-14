@@ -12,7 +12,7 @@ const STEPS = [
   {
     n: "02",
     title: "Routed to targets",
-    body: "The keeper allocates capital across Aave, Morpho and Pendle toward curator-set targets, respecting per-strategy and global caps.",
+    body: "The keeper allocates capital across Aave, Morpho, Pendle and Compound toward curator-set targets, respecting per-strategy and global caps.",
   },
   {
     n: "03",

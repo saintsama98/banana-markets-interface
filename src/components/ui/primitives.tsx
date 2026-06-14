@@ -7,6 +7,34 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
 
 /* ------------------------------------------------------------------ Surfaces */
 
+/**
+ * Page title + intro on a frosted-glass backing. App pages render their heading
+ * over the bright ambient background where plain muted text washes out; the
+ * `glass-soft` blur (same treatment as the nav/footer) plus full-strength text
+ * colour keeps it legible on every page.
+ */
+export function PageHeader({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cx(
+        "frost-readable inline-block max-w-3xl rounded-card border-2 border-ink px-5 py-4 shadow-[3px_3px_0_0_#141412]",
+        className,
+      )}
+    >
+      <h1 className="font-display text-xl font-bold tracking-tight text-fg">{title}</h1>
+      {children ? <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-fg">{children}</p> : null}
+    </div>
+  );
+}
+
 /** Solid opaque panel — the default surface for all data. */
 export function Panel({
   children,

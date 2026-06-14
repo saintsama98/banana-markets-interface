@@ -194,6 +194,21 @@
     }
   }
 
+  /* Readable frosted backing for free-floating TEXT over the bright ambient
+     (page headers, breadcrumbs, notes). glass-soft's 10% yellow tint is too
+     faint to lift prose off the busy background, so this uses a high-opacity
+     cream surface + blur: clearly visible, still translucent. */
+  .frost-readable {
+    background: rgb(var(--surface-1) / 0.86);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .frost-readable {
+      background: rgb(var(--surface-1));
+    }
+  }
+
   /* Controls just need a positioning context (for the active-tab indicator). */
   .btn,
   .pill-tabs {
@@ -278,7 +293,11 @@
   .dtable {
     @apply w-full text-sm;
   }
-  .dtable thead th {
+  /* :where() zeroes the selector's specificity so per-column utility classes in
+     the markup (text-right on numeric headers, pl-5/pr-5 edge padding) win.
+     Without it, text-left here (0,1,2) beats text-right (0,1,0) and every
+     right-aligned column's header drifts left of its values. */
+  :where(.dtable thead) th {
     @apply border-b-2 border-ink px-3 py-2.5 text-left font-display text-2xs font-bold uppercase tracking-[0.1em] text-fg-muted;
   }
   .dtable tbody td {

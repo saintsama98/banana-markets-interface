@@ -12,7 +12,7 @@ const SECTIONS = [
   {
     group: "Concepts",
     items: [
-      { title: "What is Banana Markets", body: "An ERC-4626 vault on an EIP-2535 diamond that routes USDC across Aave, Morpho and Pendle." },
+      { title: "What is Banana Markets", body: "An ERC-4626 vault on an EIP-2535 diamond that routes USDC across Aave, Morpho, Pendle and Compound." },
       { title: "Shares & share price", body: "Deposits mint shares; yield accrues into the share price. Redemptions convert shares back to assets." },
       { title: "Risk model", body: "Per-strategy and global caps, an idle reserve, quarantine, and a share-price circuit breaker." },
     ],
