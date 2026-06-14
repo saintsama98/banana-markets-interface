@@ -24,8 +24,6 @@ surfaces unlock; locked ones show a gate instead of the content.
 ## Getting started
 
 ```bash
-cd /mnt/adiii_dev/Ethereum-dev/vault-router-ui
-cp .env.example .env.local      # then fill in values (see below)
 npm install                     # already run once during scaffolding
 npm run dev                     # http://localhost:3000
 ```
